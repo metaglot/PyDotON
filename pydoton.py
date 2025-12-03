@@ -1,12 +1,20 @@
 from __future__ import annotations
-from typing import Optional, Any
+from typing import Optional, Any, TypeAlias
 from types import NoneType
 import json
 import pathlib
 
+DScalar: TypeAlias = str | int | float | bool | NoneType
+# DObject: TypeAlias = dict[str, Any]
+DObject: TypeAlias = dict[str, Any]
+DArray: TypeAlias = list[Any]
+DType: TypeAlias = DObject | DArray | DScalar
+
 class Doton():
     """
     A utility class for allowing dot-notation with json data
+
+    valid types: object, array, number, string, Boolean, or null
     """
     # @staticmethod
     # def intval(val: str) -> int:
@@ -14,16 +22,19 @@ class Doton():
     #     if m and m.string == str(val):
     #         return int(val)
     #     return -1
+    _json:DType
     
-    def __init__(self, _json_obj:Optional[Any] = None, **kwargs: str):
-        if _json_obj is None and 'file' in kwargs:
-            _json_obj = json.loads(pathlib.Path(kwargs['file']).read_text())
-        elif _json_obj is None:
-            _json_obj = {}
-        self.__dict__['_json'] = _json_obj
+    def __init__(self, ddata:Optional[DType] = None, **kwargs: str):
+
+        if ddata is None: 
+            if 'file' in kwargs:
+                ddata:DType = json.loads(pathlib.Path(kwargs['file']).read_text())
+            else:
+                ddata:DType = {}
+        self.__dict__['_json'] = ddata
 
     def __repr__(self):
-        if isinstance(self._json, dict):
+        if isinstance(self._json, DObject):
             return json.dumps(self._json, indent=4)
         return str(self._json)
     
@@ -32,16 +43,16 @@ class Doton():
             return json.dumps(self._json, indent=4)
         return str(self._json)
 
-    def __getitem__(self, key: str|int) -> Doton|str|int|float|bool|NoneType:
+    def __getitem__(self, key: str|int) -> Doton|DScalar:
         if str(key).startswith("__"):
             return getattr(self, str(key))
         # if (isinstance(key, int) and isinstance(self._json, list)) or (isinstance(key, str) and key in self._json):
         not_valid_key_for_dict = isinstance(self._json, dict) and (str(key) not in self._json)
         not_valid_key_for_list = isinstance(key, int) and (0 > key >= len(self._json))
         if not_valid_key_for_dict or not_valid_key_for_list:
-            raise KeyError(f"{key} not found")
+            raise KeyError(f"'{key}' not found")
         val = self._json[key]
-        if isinstance(val, str|int|float|bool|NoneType):
+        if isinstance(val, DScalar):
             return self._json[key]
         return Doton(self._json[key])
     
