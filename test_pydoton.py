@@ -77,10 +77,11 @@ def test_abuse():
     v.third = {}
     v.third.item1 = "some bunk"
     v.third.item2 = "some bunkerz"
-
+    print("")
     did_fail = False
     try:
-        print(v.second.dingus)
+        print("expects 'subkey not found':")
+        print(v.second.subkey)
     except KeyError as ke:
         print(ke)
         did_fail = True
@@ -88,8 +89,10 @@ def test_abuse():
 
     did_fail = False
     try:
+        print("expects '0 not found'")
         print(v.third[0])
     except KeyError as ke:
         print(ke)
         did_fail = True
     assert did_fail
+    print("")
