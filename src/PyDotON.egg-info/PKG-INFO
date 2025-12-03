@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: PyDotON
+Version: 0.0.1
+Summary: class that provides simple dot-notation for JSON-objects
+Author-email: "Benny B. Pedersen" <pydoton@b3nny.eu>
+License-Expression: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# PyDotON
+a json utility class allowing for dot-notation

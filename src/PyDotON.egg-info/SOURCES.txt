@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+src/PyDotON.egg-info/PKG-INFO
+src/PyDotON.egg-info/SOURCES.txt
+src/PyDotON.egg-info/dependency_links.txt
+src/PyDotON.egg-info/top_level.txt
+src/pydoton/__init__.py
+src/pydoton/example.py
+tests/test_parse_real_json.py
+tests/test_pydoton.py
