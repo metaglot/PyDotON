@@ -4,6 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyDotON"
+version = "0.0.1"
+authors = [
+    { name="Benny B. Pedersen", email="pydoton@b3nny.eu" },
+]
+description = "class that provides simple dot-notation for JSON-objects"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
