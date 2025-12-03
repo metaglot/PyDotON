@@ -1,6 +1,6 @@
 import json
 from types import NoneType
-from .pydoton import Doton
+from pydoton import Doton
 
 
 def test_pydoton_json_parsing_and_integrity():

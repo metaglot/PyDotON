@@ -1,7 +1,7 @@
 import sys
 import json
 import pathlib
-from .pydoton import Doton
+from pydoton import Doton
 
 # class Graph
 
