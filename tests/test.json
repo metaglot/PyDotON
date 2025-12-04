@@ -1,0 +1,15 @@
+{
+    "key_array": [1,2,3,4],
+    "subobject": {
+        "string_val": "some string value",
+        "third_level": {
+            "another_string": "value goes here",
+            "list_of_some_primes": [3,5,7,23,37]
+        }
+    },
+    "a_float": 1.23,
+    "an_int": 1,
+    "a_boolean": true,
+    "a_null": null,
+    "tailstring": "last key"
+}
