@@ -133,25 +133,25 @@ class Doton():
         
         return len(self._json)
 
-    def value(self):
+    def doton_value(self):
         return self._json
 
-    def get_type(self):
+    def doton_type(self):
         return type(self._json)
     
-    def to_dict(self):
+    def doton_dict(self):
         return dict(self.__dict__['_json'])
 
-    def is_type(self, compare_type: type) -> bool:
+    def doton_type_test(self, compare_type: type) -> bool:
         return type(self._json) == compare_type
 
-    def loadf(self, file: pathlib.Path | str):
+    def doton_loadfile(self, file: pathlib.Path | str):
         file = pathlib.Path(file)
         self.__dict__['_json'] = json.loads(file.read_text())
     
-    def writef(self, file: pathlib.Path|str):
+    def doton_writefile(self, file: pathlib.Path|str):
         file = pathlib.Path(file)
-        file.write_text(json.dumps(self.to_dict(), indent=2))
+        file.write_text(json.dumps(self.doton_dict(), indent=2))
 
 
 __all__ = ['Doton']

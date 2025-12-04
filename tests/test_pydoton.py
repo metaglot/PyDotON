@@ -26,12 +26,12 @@ def test_pydoton_json_parsing_and_integrity():
         "another_new_list": []
     }
 
-    pjson.new_key.another_new_list.value().extend([23,31,37])
+    pjson.new_key.another_new_list.doton_value().extend([23,31,37])
 
     assert len(pjson.new_key.another_new_list) == 3
     assert len(pjson.chungis.prior) == 4
-    assert pjson.chungis.prior.is_type(list)
-    assert not pjson.chungis.prior.is_type(dict)
+    assert pjson.chungis.prior.doton_type_test(list)
+    assert not pjson.chungis.prior.doton_type_test(dict)
     assert isinstance(pjson.chungis.prior[0], int)
     assert isinstance(pjson.dingus.thingie.someval, str)
     assert type(pjson.new_key.some_new_key) == type(None)
@@ -119,10 +119,10 @@ def test_reading_writing_consistency():
     jd.tailstring = "last key"
 
     # writing JSON to disk
-    jd.writef(writefile)
+    jd.doton_writefile(writefile)
 
     # reading and serializing
-    new_json_string = json.dumps(Doton(file=str(writefile)).to_dict())
+    new_json_string = json.dumps(Doton(file=str(writefile)).doton_dict())
 
     # clean after testing
     writefile.unlink()
