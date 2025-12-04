@@ -3,6 +3,8 @@ import pathlib
 from types import NoneType
 from pydoton import Doton
 
+test_folder_path = pathlib.Path(__file__).parent
+
 
 def test_pydoton_json_parsing_and_integrity():
     pjson = Doton({
@@ -95,8 +97,8 @@ def test_abuse():
 
 def test_reading_writing_consistency():
     print("")
-    writefile = pathlib.Path("writetest_deleteme.json")
-    json_test_file = pathlib.Path("test.json")
+    writefile = pathlib.Path(test_folder_path / "writetest_deleteme.json")
+    json_test_file = pathlib.Path(test_folder_path / "test.json")
     json_string = json.dumps(json.loads(json_test_file.read_text()))
     print(f"loaded from disk: {json_string}")
 
@@ -120,7 +122,7 @@ def test_reading_writing_consistency():
     jd.writef(writefile)
 
     # reading and serializing
-    new_json_string = json.dumps(Doton(file=writefile).to_dict())
+    new_json_string = json.dumps(Doton(file=str(writefile)).to_dict())
 
     # clean after testing
     writefile.unlink()
@@ -134,7 +136,7 @@ def test_parse_maxpatcher():
     def dfj(path: str) -> dict:
         return json.loads(pathlib.Path(path).read_text())
 
-    maxasm = Doton(None, file="max_patcher/asm2.maxpat")
+    maxasm = Doton(None, file=str(test_folder_path / "max_patcher/asm2.maxpat"))
 
     # dependencies = Doton({
     #     f"{'.'.join(str(x.name).split('.')[0:-1])}":dfj(f"max_patcher/{x.patcherrelativepath}/{x.name}") for x in maxasm.patcher.dependency_cache

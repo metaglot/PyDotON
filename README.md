@@ -12,5 +12,4 @@ This is to satisfy my curiousity
 
 
 # Run tests
-- `cd tests`
-- `pytest -v`
+- `pytest -v tests`
