@@ -1,13 +1,12 @@
 from __future__ import annotations
-from typing import Optional, Any, TypeAlias
+from typing import Optional, TypeAlias
 from types import NoneType
 import json
 import pathlib
 
 DScalar: TypeAlias = str | int | float | bool | NoneType
-# DObject: TypeAlias = dict[str, Any]
-DObject: TypeAlias = dict[str, Any]
-DArray: TypeAlias = list[Any]
+DObject: TypeAlias = dict[str, "DType"]
+DArray: TypeAlias = list["DType"]
 DType: TypeAlias = DObject | DArray | DScalar
 
 class Doton():
@@ -28,13 +27,13 @@ class Doton():
 
         if ddata is None: 
             if 'file' in kwargs:
-                ddata:DType = json.loads(pathlib.Path(kwargs['file']).read_text())
+                ddata = json.loads(pathlib.Path(kwargs['file']).read_text())
             else:
-                ddata:DType = {}
+                ddata = {}
         self.__dict__['_json'] = ddata
 
     def __repr__(self):
-        if isinstance(self._json, DObject):
+        if isinstance(self._json, dict):
             return json.dumps(self._json, indent=4)
         return str(self._json)
     
@@ -56,13 +55,20 @@ class Doton():
             return self._json[key]
         return Doton(self._json[key])
     
-    def __setitem__(self, key, value):
-        self._json[key] = value
+    def __setitem__(self, key:str|int, value: DType):
+        if isinstance(self._json, DScalar):
+            raise Exception("can't subscript scalar value")
+        if isinstance(self._json, list) and isinstance(key, int):
+            self._json[key] = value
+        elif isinstance(self._json, dict) and isinstance(key, str):
+            self._json[key] = value
 
-    def __eq__(self, value):
+    def __eq__(self, value: DScalar) -> bool:
         return value == self._json
 
     def __iter__(self):
+        if isinstance(self._json, DScalar):
+            raise Exception("can't iterate over scalar value")
         for t in self._json:
             yield Doton(t)
 
@@ -73,10 +79,14 @@ class Doton():
             return Doton(self.__dict__['_json'][key])
         raise KeyError(f"{key} not found")
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key:str, value:DType):
         self.__dict__['_json'][key] = value
 
     def __len__(self):
+        if not (isinstance(self._json, dict) or \
+                isinstance(self._json, list) or \
+                isinstance(self._json, str)):
+            raise Exception(f"{type(self._json)} value doesn't have a length")
         return len(self._json)
 
     def value(self):
