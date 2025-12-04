@@ -27,13 +27,13 @@ class Doton():
 
     def __repr__(self):
         if isinstance(self._json, dict):
-            return json.dumps(self._json, indent=4)
+            return json.dumps(self._json, indent=2)
         
         return str(self._json)
     
     def __str__(self):
         if isinstance(self._json, dict):
-            return json.dumps(self._json, indent=4)
+            return json.dumps(self._json, indent=2)
         
         return str(self._json)
 
@@ -140,7 +140,7 @@ class Doton():
         return type(self._json)
     
     def to_dict(self):
-        return self.__dict__['_json']
+        return dict(self.__dict__['_json'])
 
     def is_type(self, compare_type: type) -> bool:
         return type(self._json) == compare_type
@@ -151,7 +151,7 @@ class Doton():
     
     def writef(self, file: pathlib.Path|str):
         file = pathlib.Path(file)
-        file.write_text(self.__dict__['_json'])
+        file.write_text(json.dumps(self.to_dict(), indent=2))
 
 
 __all__ = ['Doton']
