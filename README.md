@@ -1,6 +1,7 @@
 # PyDotON
-a json utility class allowing for dot-notation
+python class that allows for use of dot-notation for JSON in python.
 
+This is to satisfy my curiousity
 
 
 # Setup
