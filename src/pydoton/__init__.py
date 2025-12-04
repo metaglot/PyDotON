@@ -78,6 +78,16 @@ class Doton():
         elif isinstance(self._json, dict) and isinstance(key, str):
             self._json[key] = value
 
+    def __delitem__(self, key: str|int):
+        if isinstance(self._json, dict):
+            self._json.__delitem__(str(key))
+
+        elif isinstance(self._json, list):
+            self._json.__delitem__(int(key))
+
+        else:
+            raise Exception("can not delete scalar value")
+
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Doton):
             return self._json == other._json
@@ -94,7 +104,8 @@ class Doton():
         for t in self._json:
             if isinstance(t, DScalar):
                 yield t
-            yield Doton(t)
+            else:
+                yield Doton(t)
 
     def __getattr__(self, key: str):
         if key in self.__dict__['_json']:
@@ -107,6 +118,12 @@ class Doton():
 
     def __setattr__(self, key:str, value:DType):
         self.__dict__['_json'][key] = value
+    
+    def __delattr__(self, key: str):
+        if isinstance(self._json, dict):
+            self._json.__delitem__(key)
+        else:
+            raise Exception(f"can't delete keys on non-dict type {type(self._json)}")
 
     def __len__(self):
         if not (isinstance(self._json, dict) or \
