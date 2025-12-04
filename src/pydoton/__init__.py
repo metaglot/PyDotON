@@ -92,6 +92,8 @@ class Doton():
             raise Exception("can't iterate over scalar value")
         
         for t in self._json:
+            if isinstance(t, DScalar):
+                yield t
             yield Doton(t)
 
     def __getattr__(self, key: str):

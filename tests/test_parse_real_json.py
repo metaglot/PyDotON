@@ -59,8 +59,9 @@ def test_parse_maxpatcher():
 
 
     for edge in maxasm.patcher.lines:
-        src, outlet = edge.patchline.source
-        dest, inlet = edge.patchline.destination
+        print(len(edge.patchline.source))
+        src, outlet, *_ = edge.patchline.source
+        dest, inlet, *_ = edge.patchline.destination
         print(f"----> ({src}) {get_name_from_id(str(src))},{outlet} ----> ({dest}) {get_name_from_id(str(dest))}, {inlet}")
 
 # maxp = Doton(None, file="max_patcher/maxpatcher.json")
