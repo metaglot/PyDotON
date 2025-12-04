@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TypeAlias
+from typing import Any, Optional, TypeAlias
 from types import NoneType
 import json
 import pathlib
@@ -15,16 +15,9 @@ class Doton():
 
     valid types: object, array, number, string, Boolean, or null
     """
-    # @staticmethod
-    # def intval(val: str) -> int:
-    #     m = re.match(r"[0-9]+", str(val))
-    #     if m and m.string == str(val):
-    #         return int(val)
-    #     return -1
     _json:DType
     
     def __init__(self, ddata:Optional[DType] = None, **kwargs: str):
-
         if ddata is None: 
             if 'file' in kwargs:
                 ddata = json.loads(pathlib.Path(kwargs['file']).read_text())
@@ -45,15 +38,24 @@ class Doton():
     def __getitem__(self, key: str|int) -> Doton|DScalar:
         if str(key).startswith("__"):
             return getattr(self, str(key))
-        # if (isinstance(key, int) and isinstance(self._json, list)) or (isinstance(key, str) and key in self._json):
-        not_valid_key_for_dict = isinstance(self._json, dict) and (str(key) not in self._json)
-        not_valid_key_for_list = isinstance(key, int) and (0 > key >= len(self._json))
-        if not_valid_key_for_dict or not_valid_key_for_list:
+        invalid_key_for_dict = isinstance(self._json, dict) and (str(key) not in self._json)
+        invalid_index_for_list_or_string = (isinstance(self._json, list) or isinstance(self._json, str)) and (0 > int(key) >= len(self._json))
+        if invalid_key_for_dict or invalid_index_for_list_or_string:
             raise KeyError(f"'{key}' not found")
-        val = self._json[key]
-        if isinstance(val, DScalar):
-            return self._json[key]
-        return Doton(self._json[key])
+        if isinstance(self._json, int|float|bool|NoneType):
+            raise Exception("scalar values can't be subscripted")
+        if isinstance(self._json, str) and isinstance(key, str):
+            raise Exception("string index cannot be str; must be an integer")
+        if isinstance(self._json, str|list) and isinstance(key, int):
+            val = self._json[key]
+            if isinstance(val, DScalar):
+                return self._json[key]
+            return Doton(self._json[key])
+        elif isinstance(self._json, dict) and isinstance(key, str):
+            val = self._json[key]
+            if isinstance(val, DScalar):
+                return self._json[key]
+            return Doton(self._json[key])
     
     def __setitem__(self, key:str|int, value: DType):
         if isinstance(self._json, DScalar):
@@ -63,8 +65,12 @@ class Doton():
         elif isinstance(self._json, dict) and isinstance(key, str):
             self._json[key] = value
 
-    def __eq__(self, value: DScalar) -> bool:
-        return value == self._json
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Doton):
+            return self._json == other._json
+        if isinstance(other, DScalar):
+            return other == self._json
+        return False
 
     def __iter__(self):
         if isinstance(self._json, DScalar):
