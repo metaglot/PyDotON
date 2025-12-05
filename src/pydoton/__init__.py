@@ -20,7 +20,11 @@ class Doton():
     def __init__(self, ddata:Optional[DType] = None, **kwargs: str):
         if ddata is None: 
             if 'file' in kwargs:
-                ddata = json.loads(pathlib.Path(kwargs['file']).read_text())
+                self.doton_loadfile(kwargs['file'])
+                return
+            elif 'jsonstring' in kwargs:
+                self.doton_loadstring(kwargs['jsonstring'])
+                return
             else:
                 ddata = {}
         self.__dict__['_json'] = ddata
@@ -93,11 +97,15 @@ class Doton():
             raise Exception("can not delete scalar value")
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, Doton):
+        # compare values value-wise
+        if (isinstance(other, Doton) or isinstance(other, dict)) and isinstance(self._json, dict):
             return json.dumps(self._json) == json.dumps(other._json)
         
         if isinstance(other, DScalar):
             return other == self._json
+        
+        if isinstance(other, list) and isinstance(self._json, list):
+            return self._json == other
         
         return False
 
@@ -111,16 +119,18 @@ class Doton():
             else:
                 yield Doton(t)
 
-    def __getattr__(self, key: str):
+    def __getattr__(self, key: str) -> DScalar | Doton :
         if key in self.__dict__['_json']:
-            if isinstance(self.__dict__['_json'][key], str|int|bool|float|NoneType):
+            if isinstance(self.__dict__['_json'][key], DScalar):
                 return self.__dict__['_json'][key]
             return Doton(self.__dict__['_json'][key])
-        
         raise KeyError(f"{key} not found")
 
     def __setattr__(self, key:str, value:DType):
-        self.__dict__['_json'][key] = value
+        if isinstance(self.__dict__['_json'], dict):
+            self.__dict__['_json'][key] = value
+        else:
+            raise TypeError("not dict type")
     
     def __delattr__(self, key: str):
         if isinstance(self._json, dict):
@@ -128,7 +138,7 @@ class Doton():
         else:
             raise Exception(f"can't delete keys on non-dict type {type(self._json)}")
 
-    def __len__(self):
+    def __len__(self) -> int:
         if not (isinstance(self._json, dict) or \
                 isinstance(self._json, list) or \
                 isinstance(self._json, str)):
@@ -136,9 +146,9 @@ class Doton():
         
         return len(self._json)
 
-    def keys(self):
+    def keys(self) -> list[str]:
         if isinstance(self._json, dict):
-            return self._json.keys()
+            return list(self._json.keys())
         else:
             raise Exception(f"not dict-type: {type(self._json)}")
 
@@ -154,10 +164,10 @@ class Doton():
         else:
             raise Exception(f"can't extend type: {type(self._json)}")
 
-    def doton_value(self):
+    def doton_value(self) -> DType:
         return self._json
 
-    def doton_type(self):
+    def doton_type(self) -> type:
         return type(self._json)
     
     def doton_dict(self):
@@ -173,6 +183,10 @@ class Doton():
     def doton_writefile(self, file: pathlib.Path|str):
         file = pathlib.Path(file)
         file.write_text(json.dumps(self.doton_dict(), indent=2))
+    
+    def doton_loadstring(self, obj: str):
+        self.__dict__['_json'] = json.loads(obj)
+        return self
 
 
 __all__ = ['Doton']

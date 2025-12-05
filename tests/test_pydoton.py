@@ -6,6 +6,15 @@ from pydoton import Doton
 test_folder_path = pathlib.Path(__file__).parent
 
 
+def doton_test_print_guard(func):
+    def wrapper(*args, **kwargs ):
+        print()
+        func(*args, **kwargs)
+        print()
+    return wrapper
+
+
+@doton_test_print_guard
 def test_pydoton_json_parsing_and_integrity():
     pjson = Doton({
         "dingus": {
@@ -26,7 +35,7 @@ def test_pydoton_json_parsing_and_integrity():
         "another_new_list": []
     }
 
-    pjson.new_key.another_new_list.doton_value().extend([23,31,37])
+    pjson.new_key.another_new_list.extend([23,31,37])
 
     assert len(pjson.new_key.another_new_list) == 3
     assert len(pjson.chungis.prior) == 4
@@ -38,6 +47,7 @@ def test_pydoton_json_parsing_and_integrity():
     assert f"{pjson.new_key.some_new_key}" == "None"
 
 
+@doton_test_print_guard
 def test_object_construction_and_types():
     v = Doton()
     v.first = "yes this"
@@ -67,6 +77,7 @@ def test_object_construction_and_types():
     assert isinstance(vv['stringtype'], str)
 
 
+@doton_test_print_guard
 def test_abuse():
     v = Doton()
     v.first = "some string"
@@ -74,7 +85,6 @@ def test_abuse():
     v.third = {}
     v.third.item1 = "some bunk"
     v.third.item2 = "some bunkerz"
-    print("")
     did_fail = False
     try:
         print("expects 'subkey not found':")
@@ -92,9 +102,18 @@ def test_abuse():
         print(ke)
         did_fail = True
     assert did_fail
-    print("")
+
+    did_fail = False
+    try:
+        v.first.cantdothis = "yes"
+    except Exception as e:
+        print(e)
+        did_fail = True
+
+    assert did_fail
 
 
+@doton_test_print_guard
 def test_reading_writing_consistency():
     print("")
     writefile = pathlib.Path(test_folder_path / "writetest_deleteme.json")
@@ -132,6 +151,7 @@ def test_reading_writing_consistency():
     print("")
 
 
+@doton_test_print_guard
 def test_parse_maxpatcher():
     def dfj(path: str) -> dict:
         return json.loads(pathlib.Path(path).read_text())
@@ -179,6 +199,7 @@ def test_parse_maxpatcher():
         print(f"----> ({src}) {get_name_from_id(str(src))},{outlet} ----> ({dest}) {get_name_from_id(str(dest))}, {inlet}")
 
 
+@doton_test_print_guard
 def test_for_loop():
     l1 = [2,3,5,7,11,13,17,19]
     o1 = {
@@ -208,6 +229,7 @@ def test_for_loop():
     print()
 
 
+@doton_test_print_guard
 def test_deletion():
     print()
     d1 = Doton({
@@ -226,6 +248,7 @@ def test_deletion():
     print()
 
 
+@doton_test_print_guard
 def test_list_comprehension():
     d = Doton()
     d.some_list = ["first", "second", "third", "unrelated"]
@@ -242,6 +265,7 @@ def test_list_comprehension():
     # assert 
 
 
+@doton_test_print_guard
 def test_dictionary_comprehension():
     d = Doton()
     d.some_object = {
@@ -255,7 +279,7 @@ def test_dictionary_comprehension():
 
     b2 = Doton({**b.a, **b.b, **b.c, **b.d})
 
-    bsum = sum([b2[h] for h in b2])
+    bsum = sum([int(b2[h]) for h in b2])
 
     print(d.some_object)
     print(b)
@@ -277,3 +301,32 @@ def test_dictionary_comprehension():
     assert b2.i == 7
     assert bsum == 47
     assert b == d.some_object
+
+
+@doton_test_print_guard
+def test_parsestring():
+    # print()
+    jsonstr = """{
+    "key1": "value1",
+    "obj1": {
+        "okey1": "ovalue1",
+        "okey2": "ovalue2"
+    },
+    "key2": "value2",
+    "keynull": null,
+    "keybool": true,
+    "keyint": 3,
+    "keyfloat": 3.14159,
+    "keylist": [1, 2, 3]
+}"""
+    d = Doton(jsonstring=jsonstr)
+    assert d.key1 == "value1"
+    assert d.key2 == "value2"
+    assert d.obj1.okey1 == "ovalue1"
+    assert d.obj1.okey2 == "ovalue2"
+    assert d.keynull == None
+    assert d.keybool == True
+    assert d.keyint == 3
+    assert d.keyfloat > 3.1415 and d.keyfloat < 3.1416
+    assert d.keylist == [1, 2, 3]
+    
