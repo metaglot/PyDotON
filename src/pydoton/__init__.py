@@ -37,7 +37,7 @@ class Doton():
         
         return str(self._json)
 
-    def __getitem__(self, key: str|int) -> Doton|DScalar:
+    def __getitem__(self, key: str|int) -> Doton|DType:
         if str(key).startswith("__"):
             return getattr(self, str(key))
         invalid_key_for_dict = isinstance(self._json, dict) and \
@@ -57,16 +57,20 @@ class Doton():
             raise Exception("string index cannot be str; must be an integer")
         
         if isinstance(self._json, str|list) and isinstance(key, int):
-            val = self._json[key]
-            if isinstance(val, DScalar):
-                return self._json[key]
-            return Doton(self._json[key])
+            if 0 <= key <= len(self._json):
+                val = self._json[key]
+                if isinstance(val, DScalar):
+                    return self._json[key]
+                return Doton(self._json[key])
+            raise IndexError("index {key} out of range")
         
         elif isinstance(self._json, dict) and isinstance(key, str):
-            val = self._json[key]
-            if isinstance(val, DScalar):
-                return self._json[key]
-            return Doton(self._json[key])
+            if key in self._json:
+                val = self._json[key]
+                if isinstance(val, DScalar):
+                    return self._json[key]
+                return Doton(self._json[key])
+            raise KeyError(f"key '{key}' not found")
     
     def __setitem__(self, key:str|int, value: DType):
         if isinstance(self._json, DScalar):
@@ -111,7 +115,6 @@ class Doton():
         if key in self.__dict__['_json']:
             if isinstance(self.__dict__['_json'][key], str|int|bool|float|NoneType):
                 return self.__dict__['_json'][key]
-            
             return Doton(self.__dict__['_json'][key])
         
         raise KeyError(f"{key} not found")
