@@ -226,3 +226,54 @@ def test_deletion():
     print()
 
 
+def test_list_comprehension():
+    d = Doton()
+    d.some_list = ["first", "second", "third", "unrelated"]
+
+    filtered_list = [i for i in d.some_list if "e" in i]
+    assert filtered_list == ["second", "unrelated"]
+
+    d.some_object_list = [{"e": 23}, {"i": 2, "t": 5}, {"i": 7, "e": 13}]
+    filtered_list = [o for o in d.some_object_list if "e" in o]
+    assert len(filtered_list) == 2
+    assert filtered_list[0].e == 23
+    assert filtered_list[1].e == 13
+    # assert filtered_list
+    # assert 
+
+
+def test_dictionary_comprehension():
+    d = Doton()
+    d.some_object = {
+        "a":{"e": 23},
+        "b":{"i": 2, "t": 5},
+        "c":{"i": 7, "e": 13},
+        "d":{"y": 14, "x": 8}
+    }
+
+    b = Doton({ v:dict(d.some_object[v]) for v in d.some_object })
+
+    b2 = Doton({**b.a, **b.b, **b.c, **b.d})
+
+    bsum = sum([b2[h] for h in b2])
+
+    print(d.some_object)
+    print(b)
+    print(b2)
+
+    assert ('e' in b2)
+    assert ('i' in b2)
+    assert ('t' in b2)
+    assert ('y' in b2)
+    assert ('x' in b2)
+    assert ('a' not in b2)
+    assert ('b' not in b2)
+    assert ('c' not in b2)
+    assert ('d' not in b2)
+    assert len(b2.keys()) == 5
+
+    assert b2.y == 14
+    assert b2.e == 13
+    assert b2.i == 7
+    assert bsum == 47
+    assert b == d.some_object
