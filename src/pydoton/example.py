@@ -31,7 +31,8 @@ assert jdata['an_array'][0] == 11
 assert jdata.an_object.another_object.another_string == "value goes here"
 
 for l in jdata.an_object.another_object.list_of_some_primes:
-    print(l)
     assert is_prime(l)
 
+
+print("it works!")
 # assert is_prime(37)
