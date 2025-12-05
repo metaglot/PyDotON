@@ -90,7 +90,7 @@ class Doton():
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Doton):
-            return self._json == other._json
+            return json.dumps(self._json) == json.dumps(other._json)
         
         if isinstance(other, DScalar):
             return other == self._json
@@ -132,6 +132,24 @@ class Doton():
             raise Exception(f"{type(self._json)} value doesn't have a length")
         
         return len(self._json)
+
+    def keys(self):
+        if isinstance(self._json, dict):
+            return self._json.keys()
+        else:
+            raise Exception(f"not dict-type: {type(self._json)}")
+
+    def append(self, datum:DType):
+        if isinstance(self._json, list):
+            self._json.append(datum)
+        else:
+            raise Exception(f"can't append() to type {type(self._json)}")
+
+    def extend(self, data: list[DType]):
+        if isinstance(self._json, list):
+            self._json.extend(list(data))
+        else:
+            raise Exception(f"can't extend type: {type(self._json)}")
 
     def doton_value(self):
         return self._json
