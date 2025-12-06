@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+import subprocess
+
+
+DEPENDENCIES = ['pytest']
+
+
+def setup_venv():
+    p1 = subprocess.Popen(["python3", "-m", "venv", ".venv"], stdout=subprocess.PIPE)
+    out, err = p1.communicate()
+    print(out.decode('utf-8'))
+
+
+def install_dependencies():
+    for dep in DEPENDENCIES:
+        p2 = subprocess.Popen([".venv/bin/python", "-m", "pip", "install", dep], stdout=subprocess.PIPE)
+        out, err = p2.communicate()
+        print(out.decode('utf-8'))
+
+
+def install_pydoton():
+    p3 = subprocess.Popen([".venv/bin/python", "-m", "pip", "install", "-e", "."], stdout=subprocess.PIPE)
+    out, err = p3.communicate()
+    print(out.decode('utf-8'))
+
+
+def main():
+    setup_venv()
+    install_dependencies()
+    install_pydoton()
+
+
+if __name__ == "__main__":
+    main()
