@@ -6,7 +6,7 @@ This is to satisfy my curiousity. I find the syntax for addressing dictionaries
 in python quite clunky, and I decided to try to make python address dictionaries
 like they are done in javascript. Probably not intended for any real use (I
 have no idea whether this is comme-il-faut in python), but rather as a vehicle
-for me to understand the language more.
+for me to understand the language better.
 
 ## Example
 ```py
@@ -33,7 +33,7 @@ jd = Doton(jsonobj)
 assert jd.some == "value"
 assert jd.childobj.some_other == "value2"
 assert jd.childobj.some_list[2] == 23
-
+# all evaluate to True
 
 # create new objects using dot-notation
 jd.newobj = {}
@@ -49,13 +49,17 @@ assert jd['newobj']['somefloat'] == 1.3
 assert jd['newobj']['someint'] == 3
 assert jd['newobj']['somebool'] == True
 assert jd['newobj']['somenull'] == None
+# all evaluate to True
+
 ```
 
 
 
 # Setup
-- `./setup-env`
+- `python3 ./setup-env`
+
 
 
 # Run tests
+- `source .venv/bin/activate`
 - `pytest -v`
