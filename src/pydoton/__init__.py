@@ -61,12 +61,12 @@ class Doton():
             raise Exception("string index cannot be str; must be an integer")
         
         if isinstance(self._json, str|list) and isinstance(key, int):
-            if 0 <= key <= len(self._json):
+            if -len(self._json) <= key < len(self._json):
                 val = self._json[key]
                 if isinstance(val, DScalar):
                     return self._json[key]
                 return Doton(self._json[key])
-            raise IndexError("index {key} out of range")
+            raise IndexError(f"index {key} out of range")
         
         elif isinstance(self._json, dict) and isinstance(key, str):
             if key in self._json:
@@ -98,7 +98,7 @@ class Doton():
 
     def __eq__(self, other: Any) -> bool:
         # compare values value-wise
-        if (isinstance(other, Doton) or isinstance(other, dict)) and isinstance(self._json, dict):
+        if isinstance(other, Doton) and isinstance(self._json, dict):
             return json.dumps(self._json) == json.dumps(other._json)
         
         if isinstance(other, DScalar):

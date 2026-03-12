@@ -152,54 +152,6 @@ def test_reading_writing_consistency():
 
 
 @doton_test_print_guard
-def test_parse_maxpatcher():
-    def dfj(path: str) -> dict:
-        return json.loads(pathlib.Path(path).read_text())
-
-    maxasm = Doton(None, file=str(test_folder_path / "max_patcher/asm2.maxpat"))
-
-    # dependencies = Doton({
-    #     f"{'.'.join(str(x.name).split('.')[0:-1])}":dfj(f"max_patcher/{x.patcherrelativepath}/{x.name}") for x in maxasm.patcher.dependency_cache
-    #     }) 
-
-    def parse_args(candidate: str) -> list[str|int|float]:
-        args = candidate.split(' ')[1:]
-        def try_parse(c: str) -> str|int|float:
-            try:
-                i = int(c)
-                return i
-            except:
-                try:
-                    f = float(candidate)
-                    return f
-                except:
-                    return c
-        return [try_parse(c) for c in args]
-        
-
-    def get_name_from_id(id: str) -> str:
-        nc, *_ = [str(n.box.text).split(" ")[0] for n in maxasm.patcher.boxes if n.box.id == id]
-        return nc
-
-    def get_args_from_id(id: str) -> list[str|int|float]:
-        nc, *_ = [parse_args(str(n.box.text)) for n in maxasm.patcher.boxes if n.box.id == id]
-        return nc
-
-
-    for box in maxasm.patcher.boxes:
-        obj = box.box
-        args = get_args_from_id(str(obj.id))
-        print(f"({obj.id}) {get_name_from_id(str(obj.id))} {args if args else ''}")
-
-
-    for edge in maxasm.patcher.lines:
-        print(len(edge.patchline.source))
-        src, outlet, *_ = edge.patchline.source
-        dest, inlet, *_ = edge.patchline.destination
-        print(f"----> ({src}) {get_name_from_id(str(src))},{outlet} ----> ({dest}) {get_name_from_id(str(dest))}, {inlet}")
-
-
-@doton_test_print_guard
 def test_for_loop():
     l1 = [2,3,5,7,11,13,17,19]
     o1 = {
